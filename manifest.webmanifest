@@ -1,0 +1,16 @@
+{
+  "name": "ISSP - Personal",
+  "short_name": "ISSP Personal",
+  "description": "Acceso del personal del Departamento Cuerpo de Cadetes",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#eef4f0",
+  "theme_color": "#0f4f37",
+  "icons": [
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
