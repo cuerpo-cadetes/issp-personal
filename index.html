@@ -7,14 +7,40 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ISSP Personal">
+  <meta http-equiv="refresh" content="2;url=https://script.google.com/macros/s/AKfycbwqWEGX1om-nHnNsGxXFWPkiEhf2UEjGTzWjC2kxOheah46-xrAIOF_OBEh56sfXljoEg/exec?vista=instructor">
   <title>ISSP Personal</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <style>html,body,iframe{width:100%;height:100%;margin:0;border:0}body{overflow:hidden;background:#eef4f0;padding-top:env(safe-area-inset-top);box-sizing:border-box}iframe{display:block}</style>
+  <style>
+    :root{color-scheme:light;font-family:Inter,Arial,sans-serif;background:#eef4f0;color:#173c2c}
+    *{box-sizing:border-box}
+    html,body{width:100%;min-height:100%;margin:0}
+    body{display:grid;place-items:center;padding:24px;padding-top:max(24px,env(safe-area-inset-top));background:linear-gradient(145deg,#eef5f1,#f9fbfa)}
+    main{width:min(100%,410px);padding:28px;text-align:center;background:#fff;border:1px solid #dce7e1;border-radius:22px;box-shadow:0 24px 70px rgba(18,57,39,.16)}
+    img{width:76px;height:86px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(18,57,39,.16))}
+    h1{margin:16px 0 8px;font-size:24px}
+    p{margin:0 0 20px;color:#607069;line-height:1.5}
+    a{display:flex;min-height:48px;align-items:center;justify-content:center;padding:12px 18px;border-radius:12px;background:#155b40;color:#fff;font-weight:700;text-decoration:none}
+  </style>
 </head>
 <body>
-  <iframe title="ISSP Personal" src="https://script.google.com/macros/s/AKfycbwqWEGX1om-nHnNsGxXFWPkiEhf2UEjGTzWjC2kxOheah46-xrAIOF_OBEh56sfXljoEg/exec?vista=instructor" allow="clipboard-write" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-  <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));</script>
+  <main>
+    <img src="apple-touch-icon.png" alt="Escudo Departamento Cuerpo de Cadetes">
+    <h1>ISSP Personal</h1>
+    <p>Abriendo el acceso seguro…</p>
+    <a id="abrirApp" href="https://script.google.com/macros/s/AKfycbwqWEGX1om-nHnNsGxXFWPkiEhf2UEjGTzWjC2kxOheah46-xrAIOF_OBEh56sfXljoEg/exec?vista=instructor">Continuar</a>
+  </main>
+  <script>
+    (()=>{
+      const destino=document.getElementById('abrirApp').href;
+      const abrir=()=>window.location.replace(destino);
+      if(!('serviceWorker' in navigator)){abrir();return}
+      Promise.race([
+        navigator.serviceWorker.register('./sw.js?v=2',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>null),
+        new Promise(resolve=>setTimeout(resolve,500))
+      ]).finally(abrir);
+    })();
+  </script>
 </body>
 </html>
