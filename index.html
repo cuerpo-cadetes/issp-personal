@@ -7,39 +7,34 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ISSP Personal">
-  <meta http-equiv="refresh" content="2;url=https://script.google.com/macros/s/AKfycbwqWEGX1om-nHnNsGxXFWPkiEhf2UEjGTzWjC2kxOheah46-xrAIOF_OBEh56sfXljoEg/exec?vista=instructor">
   <title>ISSP Personal</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <style>
-    :root{color-scheme:light;font-family:Inter,Arial,sans-serif;background:#eef4f0;color:#173c2c}
-    *{box-sizing:border-box}
-    html,body{width:100%;min-height:100%;margin:0}
-    body{display:grid;place-items:center;padding:24px;padding-top:max(24px,env(safe-area-inset-top));background:linear-gradient(145deg,#eef5f1,#f9fbfa)}
-    main{width:min(100%,410px);padding:28px;text-align:center;background:#fff;border:1px solid #dce7e1;border-radius:22px;box-shadow:0 24px 70px rgba(18,57,39,.16)}
-    img{width:76px;height:86px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(18,57,39,.16))}
-    h1{margin:16px 0 8px;font-size:24px}
-    p{margin:0 0 20px;color:#607069;line-height:1.5}
-    a{display:flex;min-height:48px;align-items:center;justify-content:center;padding:12px 18px;border-radius:12px;background:#155b40;color:#fff;font-weight:700;text-decoration:none}
+    *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;background:#eef4f0;overflow:hidden}body{padding-top:env(safe-area-inset-top)}
+    iframe{display:block;width:100%;height:100%;border:0;background:#eef4f0}
+    #carga{position:fixed;inset:0;z-index:2;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#eef5f1,#f9fbfa);font-family:Inter,Arial,sans-serif;color:#173c2c;text-align:center}
+    #carga.oculto{display:none}.tarjeta{width:min(100%,410px);padding:28px;background:#fff;border:1px solid #dce7e1;border-radius:22px;box-shadow:0 24px 70px rgba(18,57,39,.16)}
+    .tarjeta img{width:76px;height:86px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(18,57,39,.16))}h1{margin:16px 0 8px;font-size:24px}p{margin:0;color:#607069;line-height:1.5}
+    button{display:none;width:100%;min-height:48px;margin-top:18px;border:0;border-radius:12px;background:#155b40;color:#fff;font:inherit;font-weight:700;cursor:pointer}button.visible{display:block}
   </style>
 </head>
 <body>
-  <main>
-    <img src="apple-touch-icon.png" alt="Escudo Departamento Cuerpo de Cadetes">
-    <h1>ISSP Personal</h1>
-    <p>Abriendo el acceso seguro…</p>
-    <a id="abrirApp" href="https://script.google.com/macros/s/AKfycbwqWEGX1om-nHnNsGxXFWPkiEhf2UEjGTzWjC2kxOheah46-xrAIOF_OBEh56sfXljoEg/exec?vista=instructor">Continuar</a>
-  </main>
+  <div id="carga"><section class="tarjeta"><img src="apple-touch-icon.png" alt="Escudo Departamento Cuerpo de Cadetes"><h1>ISSP Personal</h1><p id="mensaje">Preparando el acceso seguro…</p><button id="reintentar" type="button">Reintentar</button></section></div>
+  <iframe id="app" title="ISSP Personal" allow="camera; clipboard-write" referrerpolicy="strict-origin-when-cross-origin"></iframe>
   <script>
     (()=>{
-      const destino=document.getElementById('abrirApp').href;
-      const abrir=()=>window.location.replace(destino);
-      if(!('serviceWorker' in navigator)){abrir();return}
-      Promise.race([
-        navigator.serviceWorker.register('./sw.js?v=2',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>null),
-        new Promise(resolve=>setTimeout(resolve,500))
-      ]).finally(abrir);
+      const BASE='https://script.google.com/macros/s/AKfycbwqWEGX1om-nHnNsGxXFWPkiEhf2UEjGTzWjC2kxOheah46-xrAIOF_OBEh56sfXljoEg/exec?vista=instructor';
+      const frame=document.getElementById('app'),carga=document.getElementById('carga'),mensaje=document.getElementById('mensaje'),boton=document.getElementById('reintentar');
+      let listo=false,intentos=0,timer=null;
+      const origenValido=o=>o==='https://script.google.com'||/\.googleusercontent\.com$/.test(o);
+      function mostrarApp(){listo=true;clearTimeout(timer);carga.classList.add('oculto')}
+      function cargar(){listo=false;intentos++;mensaje.textContent=intentos>1?'Reintentando la conexión…':'Preparando el acceso seguro…';boton.classList.remove('visible');carga.classList.remove('oculto');frame.src=BASE+'&contenedor=pwa&intento='+intentos+'&t='+Date.now();clearTimeout(timer);timer=setTimeout(()=>{if(listo)return;if(intentos<3){cargar();return}mensaje.textContent='No se pudo completar la carga. Comprobá la conexión y reintentá.';boton.classList.add('visible')},10000)}
+      window.addEventListener('message',e=>{if(!origenValido(e.origin))return;const tipo=e.data&&typeof e.data==='object'?e.data.type:e.data;if(tipo==='ISSP_APP_READY'||tipo==='ISSP_PANEL_READY')mostrarApp()});
+      boton.addEventListener('click',()=>{intentos=0;cargar()});
+      if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js?v=3',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{});
+      cargar();
     })();
   </script>
 </body>
